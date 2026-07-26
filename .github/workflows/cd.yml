@@ -33,6 +33,10 @@ jobs:
         run: |
           ansible-galaxy collection install community.docker
 
+      - name: Install Docker Collection
+        run: |
+          ansible-galaxy collection install community.docker
+
 
       - name: Configure SSH Key
         run: |
