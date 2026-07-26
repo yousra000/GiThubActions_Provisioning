@@ -1,0 +1,15 @@
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+.terraform.lock.hcl
+
+# Node.js
+**/node_modules/
+
+# SSH Keys
+*.pem
+
+# VS Code
+.vscode/
