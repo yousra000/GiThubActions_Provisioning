@@ -1,0 +1,57 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+
+  deploy:
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Install Docker Collection
+        run: |
+          ansible-galaxy collection install community.docker
+
+      - name: Configure SSH Key
+        run: |
+          mkdir -p ~/.ssh
+
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
+
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Disable Host Key Checking
+        run: |
+          echo "[defaults]" > ansible/ansible.cfg
+          echo "host_key_checking=False" >> ansible/ansible.cfg
+
+      - name: Export Environment Variables
+        run: |
+          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> $GITHUB_ENV
+          echo "DOCKER_TOKEN=${{ secrets.DOCKER_TOKEN }}" >> $GITHUB_ENV
+          echo "DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/nodejs-app" >> $GITHUB_ENV
+
+      - name: Deploy using Ansible
+        run: |
+          ansible-playbook \
+          -i ansible/inventory.ini \
+          ansible/deploy.yml
