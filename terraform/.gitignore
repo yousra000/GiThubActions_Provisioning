@@ -1,0 +1,20 @@
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Terraform Plans
+*.tfplan
+
+# Sensitive files
+*.pem
+
+# Python
+__pycache__/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
